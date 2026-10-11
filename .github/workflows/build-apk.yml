@@ -8,16 +8,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout kode
+        uses: actions/checkout@v4
+
+      - name: Nastavitev Jave 17
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Build APK with Gradle
+
+      - name: Nastavitev Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Ustvari Gradle Wrapper
         run: |
-          gradle assembleRelease
-      - name: Upload APK
+          gradle wrapper --gradle-version 8.2
+
+      - name: Dovoljenja za izvajanje
+        run: chmod +x gradlew
+
+      - name: Zgradi APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Shrani APK
         uses: actions/upload-artifact@v4
         with:
           name: Vremenar-APK
