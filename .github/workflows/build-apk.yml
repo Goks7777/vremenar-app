@@ -19,13 +19,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Nastavitev Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.2'
+      - name: Nastavitev Android SDK okolja
+        run: |
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+
+      - name: Namesti Gradle ročno
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
+          unzip -q gradle-8.2-bin.zip
+          echo "$PWD/gradle-8.2/bin" >> $GITHUB_PATH
 
       - name: Zgradi APK
-        run: gradle assembleRelease --stacktrace
+        run: |
+          gradle assembleRelease --stacktrace --no-daemon
 
       - name: Shrani APK kot Artifact
         uses: actions/upload-artifact@v4
