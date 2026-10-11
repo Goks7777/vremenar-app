@@ -2,6 +2,7 @@ package com.planet.vremenar;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -12,13 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
-    private final String SERVER_URL = "http://100.89.71.9:8088/";
+    private final String TARGET_URL = "http://100.89.71.9:8088/";
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         webView = new WebView(this);
         setContentView(webView);
 
@@ -26,22 +27,23 @@ public class MainActivity extends AppCompatActivity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setDatabaseEnabled(true);
+        s.setAllowFileAccess(true);
+        s.setAllowContentAccess(true);
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
-        s.setSupportZoom(false);
-        s.setBuiltInZoomControls(false);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
 
+        webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame()) {
-                    Toast.makeText(MainActivity.this, "Napaka povezave s strežnikom: " + error.getDescription(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Napaka nalaganja: " + error.getDescription(), Toast.LENGTH_LONG).show();
                 }
             }
         });
 
-        webView.loadUrl(SERVER_URL);
+        webView.loadUrl(TARGET_URL);
     }
 
     @Override
